@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option csharp_namespace = "MedicalService";
+
+package greet;
+
+// The greeting service definition.
+service Greeter {
+  // Gets cumulative total vaccine doses administered for specified country
+  rpc GetTotalVaccinesByState(TotalVaccinesRequest) returns (stream TotalVaccinesReply);
+}
+
+// The request message containing country ISO Alpha-3 code
+message TotalVaccinesRequest {
+  Filter filter = 1;
+}
+
+message Filter {
+  string filterOne = 1;
+  string filterTwo = 2;
+  string filterThree = 3;
+}
+
+// The response message containing vaccine information per country
+message TotalVaccinesReply {
+  string country = 1;
+  string iso3 = 2;
+  string region = 3;
+  string dataSource = 4;
+  string dateUpdated = 5;
+  double totalVaccinations = 6;
+  double onePlusDose = 7;
+  double totalVaccinationsPerHundred = 8;
+  double onePlusDosePerHundred = 9;
+  double personsLastDose = 10;
+  double lastDosePerHundred = 11;
+  string vaccinesUsed = 12;
+  string firstVaccineDate = 13;
+  double vaccinesTypesUsed = 14;
+  double personsBoosterDose = 15;
+  double personsBoosterDosePerHundred = 16;
+}
+
