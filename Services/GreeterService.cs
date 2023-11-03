@@ -24,13 +24,12 @@ public class GreeterService : Greeter.GreeterBase
     {
         _logger.LogInformation("Request for vaccination data recieved.");
 
-        await FileOperations.DownloadVaccinationData(_logger);
-        var covidData = FileOperations.ReadCovidData(_logger);
+        var covidData = FileOperations.ReadCovidData(request.Filter, _logger);
         
-        if (covidData != null)
+        if (covidData.Result != null)
         {
             int counter = 1;
-            foreach (var data in covidData)
+            foreach (var data in covidData.Result)
             {
                 var reply = DataHelper.FillTotalVaccinesReply(data);
 
@@ -49,4 +48,5 @@ public class GreeterService : Greeter.GreeterBase
             }
         }
     }
+    
 }

@@ -48,17 +48,21 @@ class FileOperations
     /// </summary>
     /// <param name="CountryIso3">Filtering parameter</param>
     /// <returns>Filtered covid vaccination records</returns>
-    public static IEnumerable<VaccinesData>? ReadCovidData(ILogger<GreeterService> logger)
+    public static async Task<IEnumerable<VaccinesData>?> ReadCovidData(Filter filter, ILogger<GreeterService> logger)
     {
         using var reader = new StreamReader("C:\\Users\\User\\OneDrive\\grpcService\\MedicalService\\Data\\vaccination-data.csv");
         using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
         
+        await DownloadVaccinationData(logger);
+     
         try
         {
             var records = csv.GetRecords<VaccinesData>().ToList();
+            var filteredRecords = DataFiltering.FilterVaccinationData(records, filter, logger);
+
             logger.LogInformation("Successfully read vaccination data.");
 
-            return records;
+            return filteredRecords;
         }
         catch
         {
