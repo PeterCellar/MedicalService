@@ -4,6 +4,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using System.Net;
 using MedicalService.Services;
+using MedicalService.Filtering;
 
 namespace MedicalService.Data.Models;
 class FileOperations
@@ -47,24 +48,22 @@ class FileOperations
     /// </summary>
     /// <param name="CountryIso3">Filtering parameter</param>
     /// <returns>Filtered covid vaccination records</returns>
-    public static IEnumerable<VaccinesData>? ReadFilteredCovidData(Filter filter, ILogger<GreeterService> logger)
+    public static IEnumerable<VaccinesData>? ReadCovidData(ILogger<GreeterService> logger)
     {
         using var reader = new StreamReader("C:\\Users\\User\\OneDrive\\grpcService\\MedicalService\\Data\\vaccination-data.csv");
         using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
-        IEnumerable<VaccinesData>? filteredRecords = null;
-
+        
         try
         {
             var records = csv.GetRecords<VaccinesData>().ToList();
-            filteredRecords = records.Where(record => record.Iso3 == filter.FilterOne);
             logger.LogInformation("Successfully read vaccination data.");
 
-            return filteredRecords;
+            return records;
         }
         catch
         {
             logger.LogError("Reading vaccination data failed.");
-            return filteredRecords;
+            return null;
         }
     }
 }

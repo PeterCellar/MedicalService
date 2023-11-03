@@ -5,13 +5,13 @@ namespace MedicalService.Helper;
 class DataHelper
 {
     /// <summary>
-    /// Fills gRPC TotalVaccinesReply with values
+    /// Fills gRPC VaccinesDataReply with values
     /// </summary>
     /// <param name="data">Data to fill a reply with</param>
     /// <returns>Filled gRPC TotalVaccinesReply</returns>
-    public static TotalVaccinesReply FillTotalVaccinesReply(VaccinesData data)
+    public static VaccinesDataReply FillTotalVaccinesReply(VaccinesData data)
     {
-        var reply = new TotalVaccinesReply
+        var reply = new VaccinesDataReply
         {
             Country = data.Country,
             Iso3 = data.Iso3,

@@ -7,22 +7,28 @@ package greet;
 // The greeting service definition.
 service Greeter {
   // Gets cumulative total vaccine doses administered for specified country
-  rpc GetTotalVaccinesByState(TotalVaccinesRequest) returns (stream TotalVaccinesReply);
+  rpc GetVaccinesData(VaccinesDataRequest) returns (stream VaccinesDataReply);
+
+  // 
+  rpc GetVaccinesDataByState(VaccinesDataRequest) returns (VaccinesDataReply);
 }
 
+
+
 // The request message containing country ISO Alpha-3 code
-message TotalVaccinesRequest {
+message VaccinesDataRequest {
   Filter filter = 1;
 }
 
 message Filter {
-  string filterOne = 1;
-  string filterTwo = 2;
-  string filterThree = 3;
+  string country = 1;
+  string dataSource = 2;
+  double totalVaccinations = 3;
+  double totalVaccinationsPerHundred = 4;
 }
 
 // The response message containing vaccine information per country
-message TotalVaccinesReply {
+message VaccinesDataReply {
   string country = 1;
   string iso3 = 2;
   string region = 3;

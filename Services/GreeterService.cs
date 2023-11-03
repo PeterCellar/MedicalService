@@ -20,29 +20,31 @@ public class GreeterService : Greeter.GreeterBase
     /// <param name="replyStream">gRPC reply stream</param>
     /// <param name="context">ServerContext</param>
     /// <returns>Stream with TotalVaccinesReplies</returns>
-    public override async Task GetTotalVaccinesByState(TotalVaccinesRequest request, IServerStreamWriter<TotalVaccinesReply> replyStream, ServerCallContext context)
+    public override async Task GetVaccinesData(VaccinesDataRequest request, IServerStreamWriter<VaccinesDataReply> replyStream, ServerCallContext context)
     {
         _logger.LogInformation("Request for vaccination data recieved.");
 
         await FileOperations.DownloadVaccinationData(_logger);
-
-        IEnumerable<VaccinesData>? covidData = null;
-        if (request.Filter != null)
-        {
-            covidData = FileOperations.ReadFilteredCovidData(request.Filter, _logger);
-        }
-
+        var covidData = FileOperations.ReadCovidData(_logger);
+        
         if (covidData != null)
         {
             int counter = 1;
             foreach (var data in covidData)
             {
                 var reply = DataHelper.FillTotalVaccinesReply(data);
-                
-                await replyStream.WriteAsync(reply);
-                _logger.LogInformation(@"Sent reply [{0}] to the client.", counter);
 
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                try
+                {
+                    await replyStream.WriteAsync(reply);
+                    _logger.LogInformation(@"Sent reply [{0}] to a client.", counter);
+
+                    await Task.Delay(TimeSpan.FromSeconds(1));
+                }
+                catch
+                {
+                    _logger.LogError("Sending grpc response to a client failed.");
+                }
                 counter++;
             }
         }
