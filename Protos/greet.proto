@@ -7,25 +7,46 @@ package greet;
 // The greeting service definition.
 service Greeter {
   
-  // Gets cumulative total vaccine doses administered for specified country
+  // Gets cumulative total vaccine doses per country
   rpc GetVaccinesData(VaccinesDataRequest) returns (stream VaccinesDataReply);
 
+  // Gets vaccine metadata per country
+  rpc GetVaccinesMetadata(VaccinesMetadataRequest) returns (stream VaccinesMetadataReply);
 }
 
+// The request message containing filter for vaccine metadata
+message VaccinesMetadataRequest {
+  MetadataFilter filter = 1;
+}
 
-// The request message containing country ISO Alpha-3 code
+// The response message containing vaccine metadata per country
+message VaccinesMetadataReply {
+  string iso3 = 1;
+  string vaccineName = 2;
+  string productName = 3;
+  string companyName = 4;
+  string firstVaccineDate = 5;
+  string authorizationDate = 6;
+  string startDate = 7;
+  string endDate = 8;
+  string comment = 9;
+  string dataSource = 10;
+}
+
+// Vaccination metadata filtering parameters
+message MetadataFilter {
+  string iso3 = 1;
+  string vaccineName = 2;
+  string companyName = 3;
+  string authorizationDate = 4;
+}
+
+// The request message containing filter for vaccine data
 message VaccinesDataRequest {
-  Filter filter = 1;
+  DataFilter filter = 1;
 }
 
-message Filter {
-  string country = 1;
-  string dataSource = 2;
-  double totalVaccinations = 3;
-  double totalVaccinationsPerHundred = 4;
-}
-
-// The response message containing vaccine information per country
+// The response message containing vaccine data per country
 message VaccinesDataReply {
   string country = 1;
   string iso3 = 2;
@@ -45,3 +66,10 @@ message VaccinesDataReply {
   double personsBoosterDosePerHundred = 16;
 }
 
+// Vaccination data filtering parameters 
+message DataFilter {
+  string country = 1;
+  string dataSource = 2;
+  double totalVaccinations = 3;
+  double totalVaccinationsPerHundred = 4;
+}

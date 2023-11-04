@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
 using System.Net;
@@ -14,8 +13,16 @@ class FileOperations
     /// </summary>
     public static async Task DownloadVaccinationData(ILogger<GreeterService> logger)
     {
-        string filePath = "C:\\Users\\User\\OneDrive\\grpcService\\MedicalService\\Data\\vaccination-data.csv";
-        string fileUri = "https://covid19.who.int/who-data/vaccination-data.csv";
+        string vaccinationDataFile = "C:\\Users\\User\\OneDrive\\grpcService\\MedicalService\\Data\\vaccination-data.csv";
+        string vaccinationMetadataFile = "C:\\Users\\User\\OneDrive\\grpcService\\MedicalService\\Data\\vaccination-metadata.csv";
+        string vaccinationMetadataUri = "https://covid19.who.int/who-data/vaccination-metadata.csv";
+        string vaccinationDataUri = "https://covid19.who.int/who-data/vaccination-data.csv";
+
+        var dataResources = new List<Tuple<string, string>>()
+        {
+            new(vaccinationDataUri, vaccinationDataFile),
+            new(vaccinationMetadataUri, vaccinationMetadataFile)
+        };
 
         HttpClientHandler handler = new HttpClientHandler()
         {
@@ -26,14 +33,19 @@ class FileOperations
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync(fileUri);
+                HttpResponseMessage response;
 
-                if (response.IsSuccessStatusCode)
+                foreach (var (fileUri, filePath) in dataResources)
                 {
-                    string content = response.Content.ReadAsStringAsync().Result;
+                    response = await client.GetAsync(fileUri);
 
-                    File.WriteAllText(filePath, content);
-                    logger.LogInformation("Successfully updated vaccination data.");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string content = response.Content.ReadAsStringAsync().Result;
+
+                        File.WriteAllText(filePath, content);
+                        logger.LogInformation("Successfully updated vaccination data.");
+                    }
                 }
             }
             catch
@@ -48,13 +60,13 @@ class FileOperations
     /// </summary>
     /// <param name="CountryIso3">Filtering parameter</param>
     /// <returns>Filtered covid vaccination records</returns>
-    public static async Task<IEnumerable<VaccinesData>?> ReadCovidData(Filter filter, ILogger<GreeterService> logger)
+    public static async Task<IEnumerable<VaccinesData>?> ReadCovidData(DataFilter filter, ILogger<GreeterService> logger)
     {
         using var reader = new StreamReader("C:\\Users\\User\\OneDrive\\grpcService\\MedicalService\\Data\\vaccination-data.csv");
         using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
-        
+
         await DownloadVaccinationData(logger);
-     
+
         try
         {
             var records = csv.GetRecords<VaccinesData>().ToList();

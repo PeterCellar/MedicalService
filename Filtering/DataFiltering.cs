@@ -12,7 +12,7 @@ class DataFiltering
     /// <param name="filter">Structure containing filter parameters</param>
     /// <param name="logger"></param>
     /// <returns>Filtered covid vaccination data</returns>
-    public static IEnumerable<VaccinesData>? FilterVaccinationData(IEnumerable<VaccinesData>? records, Filter filter, ILogger<GreeterService> logger)
+    public static IEnumerable<VaccinesData>? FilterVaccinationData(IEnumerable<VaccinesData>? records, DataFilter filter, ILogger<GreeterService> logger)
     {
         IEnumerable<VaccinesData>? filteredRecords = null;
 
