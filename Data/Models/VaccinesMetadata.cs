@@ -1,35 +1,32 @@
 using CsvHelper.Configuration.Attributes;
 
-namespace MedicalService.Data.Models.VaccinesMetadata;
+namespace MedicalService.Data.Models;
 class VaccinesMetadata
 {
   [Name("ISO3")]
-  public string Iso3 { get; set; }
+  public string? Iso3 { get; set; }
   
   [Name("VACCINE_NAME")]
-  public string VaccineName { get; set; }
+  public string? VaccineName { get; set; }
   
   [Name("PRODUCT_NAME")]
-  public string ProductName { get; set; }
+  public string? ProductName { get; set; }
   
   [Name("COMPANY_NAME")]
-  public string CompanyName { get; set; }
-
-  [Name("FIRST_VACCINE_DATE")]
-  public string FirstVaccineDate { get; set; }
+  public string? CompanyName { get; set; }
 
   [Name("AUTHORIZATION_DATE")]
-  public string AuthorizationDate { get; set; }
+  public string? AuthorizationDate { get; set; }
 
   [Name("START_DATE")]
-  public string StartDate { get; set; }
+  public string? StartDate { get; set; }
 
   [Name("END_DATE")]
-  public string EndDate { get; set; }
+  public string? EndDate { get; set; }
 
   [Name("COMMENT")]
-  public string Comment { get; set; }
+  public string? Comment { get; set; }
 
   [Name("DATA_SOURCE")]
-  public string DataSource { get; set; }
+  public string? DataSource { get; set; }
 }
