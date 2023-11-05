@@ -1,45 +1,66 @@
+using System.Reflection;
 using MedicalService.Data.Models;
 using MedicalService.Services;
+using System.Globalization;
 
 namespace MedicalService.Filtering;
+
 class DataFiltering
 {
 
     /// <summary>
     /// Filters covid vaccination data by filter parameters
     /// </summary>
-    /// <param name="data">Covid vaccination data</param>
-    /// <param name="filter">Structure containing filter parameters</param>
+    /// <param name="data">Generic collection of covid vaccination data</param>
+    /// <param name="filter">Generic collection containing filter parameters</param>
     /// <param name="logger"></param>
-    /// <returns>Filtered covid vaccination data</returns>
-    public static IEnumerable<VaccinesData>? FilterVaccinationData(IEnumerable<VaccinesData>? records, DataFilter filter, ILogger<GreeterService> logger)
+    /// <returns>Collection of filtered covid vaccination data</returns>
+    public static IEnumerable<T1>? FilterVaccinationData<T1, T2>(IEnumerable<T1>? records, T2 filter, ILogger<GreeterService> logger)
+    where T2 : IFilter
     {
-        IEnumerable<VaccinesData>? filteredRecords = null;
+        IEnumerable<T1>? filteredRecords = records ;
 
-        if (records != null)
+        if (filteredRecords != null)
         {
-            if (!string.IsNullOrEmpty(filter.Country))
+            if (filter.DoubleFilter != null)
             {
-                filteredRecords = records.Where(record => record.Country == filter.Country);
-                logger.LogInformation(@"Filtered record: {0}", filteredRecords.First().Country);
+                foreach (var filteringPair in filter.DoubleFilter)
+                {
+                    filteredRecords = filteredRecords.Where(record => 
+                    {
+                        PropertyInfo? propertyInfo = typeof(T1).GetProperty(filteringPair.Key);
+                        
+                        if(propertyInfo != null)
+                        {
+                            var propertyValue = propertyInfo.GetValue(record);
+                            return propertyValue != null && double.Parse(propertyValue.ToString(), CultureInfo.InvariantCulture) == filteringPair.Value;
+                        }
+                        
+                        return false;
+                    });
+                }
             }
 
-            if (!string.IsNullOrEmpty(filter.DataSource) && filteredRecords != null)
+            if (filter.StringFilter != null)
             {
-                filteredRecords = filteredRecords.Where(record => record.DataSource == filter.DataSource);
-                logger.LogInformation(@"Filtered record: {0}", filteredRecords.First().DataSource);
+                foreach (var filteringPair in filter.StringFilter)
+                {
+                    filteredRecords = filteredRecords.Where(record => 
+                    {
+                        PropertyInfo? propertyInfo = typeof(T1).GetProperty(filteringPair.Key);
+                        
+                        if(propertyInfo != null)
+                        {
+                            var propertyValue = propertyInfo.GetValue(record);
+                            return propertyValue != null && propertyValue.ToString() == filteringPair.Value;
+                        }
+                        
+                        return false;
+                    });
+                }
             }
-
-            if (filteredRecords != null && filter.TotalVaccinations != 0 && filter.TotalVaccinationsPerHundred != 0)
-            {
-                filteredRecords = filteredRecords.Where(record => record.TotalVaccinations == filter.TotalVaccinations &&
-                                                        record.TotalVaccinationsPerHundred == filter.TotalVaccinationsPerHundred);
-
-                logger.LogInformation(@"Filtered records: {0}, {1}", filteredRecords.First().TotalVaccinations, filteredRecords.First().TotalVaccinationsPerHundred);
-            }
-
         }
-
+       
         return filteredRecords;
     }
 }
