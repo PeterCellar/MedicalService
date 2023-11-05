@@ -9,8 +9,11 @@ namespace MedicalService.Data.Models;
 class FileOperations
 {
     /// <summary>
-    /// Downloads covid vaccination data file. https://covid19.who.int/who-data/vaccination-data.csv
+    ///  Downloads covid vaccination data file. https://covid19.who.int/who-data/vaccination-data.csv
+    ///  Downloads covid vaccination metadata file. https://covid19.who.int/who-data/vaccination-metadata.csv
     /// </summary>
+    /// <param name="logger"></param>
+    /// <returns></returns>
     public static async Task DownloadVaccinationData(ILogger<GreeterService> logger)
     {
         string vaccinationDataFile = "C:\\Users\\User\\OneDrive\\grpcService\\MedicalService\\Data\\vaccination-data.csv";
@@ -58,8 +61,9 @@ class FileOperations
     /// <summary>
     /// Reads covid vaccination data from csv file. https://covid19.who.int/who-data/vaccination-data.csv
     /// </summary>
-    /// <param name="CountryIso3">Filtering parameter</param>
-    /// <returns>Filtered covid vaccination records</returns>
+    /// <param name="filter">Vaccines data filter</param>
+    /// <param name="logger"></param>
+    /// <returns>Collection of filtered records</returns>
     public static async Task<IEnumerable<VaccinesData>?> ReadCovidData(DataFilter filter, ILogger<GreeterService> logger)
     {
         using var reader = new StreamReader("C:\\Users\\User\\OneDrive\\grpcService\\MedicalService\\Data\\vaccination-data.csv");
@@ -70,6 +74,35 @@ class FileOperations
         try
         {
             var records = csv.GetRecords<VaccinesData>().ToList();
+            var filteredRecords = DataFiltering.FilterVaccinationData(records, filter, logger);
+
+            logger.LogInformation("Successfully read vaccination data.");
+
+            return filteredRecords;
+        }
+        catch
+        {
+            logger.LogError("Reading vaccination data failed.");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Reads covid vaccination metadata from csv file. https://covid19.who.int/who-data/vaccination-metadata.csv
+    /// </summary>
+    /// <param name="filter">Vaccines data filter</param>
+    /// <param name="logger"></param>
+    /// <returns>Collection of filtered records</returns>
+    public static async Task<IEnumerable<VaccinesMetadata>?> ReadCovidMetadata(MetadataFilter filter, ILogger<GreeterService> logger)
+    {
+        var reader = new StreamReader("C:\\Users\\User\\OneDrive\\grpcService\\MedicalService\\Data\\vaccination-metadata.csv");
+        var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture));
+
+        await DownloadVaccinationData(logger);
+
+        try
+        {
+            var records = csv.GetRecords<VaccinesMetadata>().ToList();
             var filteredRecords = DataFiltering.FilterVaccinationData(records, filter, logger);
 
             logger.LogInformation("Successfully read vaccination data.");

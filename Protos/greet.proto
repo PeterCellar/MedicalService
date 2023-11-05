@@ -25,20 +25,17 @@ message VaccinesMetadataReply {
   string vaccineName = 2;
   string productName = 3;
   string companyName = 4;
-  string firstVaccineDate = 5;
-  string authorizationDate = 6;
-  string startDate = 7;
-  string endDate = 8;
-  string comment = 9;
-  string dataSource = 10;
+  string authorizationDate = 5;
+  string startDate = 6;
+  string endDate = 7;
+  string comment = 8;
+  string dataSource = 9;
 }
 
 // Vaccination metadata filtering parameters
 message MetadataFilter {
-  string iso3 = 1;
-  string vaccineName = 2;
-  string companyName = 3;
-  string authorizationDate = 4;
+  repeated StringPair stringFilter = 1;
+  repeated DoublePair doubleFilter = 2;
 }
 
 // The request message containing filter for vaccine data
@@ -68,8 +65,16 @@ message VaccinesDataReply {
 
 // Vaccination data filtering parameters 
 message DataFilter {
-  string country = 1;
-  string dataSource = 2;
-  double totalVaccinations = 3;
-  double totalVaccinationsPerHundred = 4;
+  repeated StringPair stringFilter = 1;
+  repeated DoublePair doubleFilter = 2; 
+}
+
+message StringPair {
+  string Key = 1;
+  string Value = 2;
+}
+
+message DoublePair {
+  string Key = 1;
+  double Value = 2;
 }
