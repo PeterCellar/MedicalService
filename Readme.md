@@ -16,7 +16,11 @@
 
 ## Build and Run
 You can build service by following command:
-/> dotnet build
+```pwsh
+> dotnet build
+```
 
 or build and run by command:
-/> dotnet run
+```pwsh
+> dotnet run
+```
