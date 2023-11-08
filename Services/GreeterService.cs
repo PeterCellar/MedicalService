@@ -22,19 +22,26 @@ public class GreeterService : Greeter.GreeterBase
     /// <returns>Stream of the VaccineDataReplies</returns>
     public override async Task GetVaccinesData(VaccinesDataRequest request, IServerStreamWriter<VaccinesDataReply> replyStream, ServerCallContext context)
     {
+
         _logger.LogInformation("Request for vaccination data recieved.");
 
-        var covidData = FileOperations.ReadCovidData(request.Filter, _logger);
-        
-        if (covidData.Result != null)
+        var covidData = await FileOperations.ReadCovidData(request.Filter, _logger);
+
+        if (covidData != null)
         {
             int counter = 1;
-            foreach (var data in covidData.Result)
+            foreach (var data in covidData)
             {
                 var reply = DataHelper.FillVaccinesDataReply(data);
 
                 try
                 {
+                    if (context.CancellationToken.IsCancellationRequested)
+                    {
+                        _logger.LogInformation("Cancellation token has been raised");
+                        return;
+                    }
+
                     await replyStream.WriteAsync(reply);
                     _logger.LogInformation(@"Sent reply [{0}] to a client.", counter);
 
@@ -48,7 +55,7 @@ public class GreeterService : Greeter.GreeterBase
             }
         }
     }
-    
+
     /// <summary>
     /// Sends vaccines metadata to a client
     /// </summary>
@@ -61,7 +68,7 @@ public class GreeterService : Greeter.GreeterBase
         _logger.LogInformation("Request for vaccination metadata received.");
 
         var covidData = FileOperations.ReadCovidMetadata(request.Filter, _logger);
-        
+
         if (covidData.Result != null)
         {
             int counter = 1;
@@ -71,10 +78,16 @@ public class GreeterService : Greeter.GreeterBase
 
                 try
                 {
+                    if (context.CancellationToken.IsCancellationRequested)
+                    {
+                        _logger.LogInformation("Cancellation token has been raised");
+                        return;
+                    }
+
                     await replyStream.WriteAsync(reply);
                     _logger.LogInformation(@"Sent reply [{0}] to a client.", counter);
 
-                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    await Task.Delay(TimeSpan.FromMilliseconds(500));
                 }
                 catch
                 {
