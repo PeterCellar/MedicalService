@@ -17,9 +17,10 @@ public class Program
                 webBuilder.UseStartup<Startup>();
                 webBuilder.ConfigureKestrel(options =>
                 {
-                    options.Listen(IPAddress.Any, 7272, listenOptions =>
+                    options.Limits.MaxConcurrentConnections = 10;
+                    options.Listen(IPAddress.Any, 7272, serverOptions =>
                     {
-                        listenOptions.UseHttps("C:\\Windows\\System32\\aspNetCoreHttps.crt", "C:\\Windows\\System32\\aspNetCoreHttps.key");
+                        serverOptions.UseHttps("C:\\Windows\\System32\\aspNetCoreHttps.crt", "C:\\Windows\\System32\\aspNetCoreHttps.key");
                     });
                 });
             });

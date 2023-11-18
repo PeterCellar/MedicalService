@@ -18,7 +18,7 @@ class DataFiltering
     public static IEnumerable<T1>? FilterVaccinationData<T1, T2>(IEnumerable<T1>? records, T2 filter, ILogger<GreeterService> logger)
     where T2 : IFilter
     {
-        IEnumerable<T1>? filteredRecords = records ;
+        IEnumerable<T1>? filteredRecords = records;
 
         if (filteredRecords != null)
         {

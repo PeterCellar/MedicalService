@@ -9,16 +9,20 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddGrpc(x => x.EnableDetailedErrors = true);
+        services.AddGrpc(options => 
+        {
+            //options.MaxConcurrentCalls = 100; by default
+            options.EnableDetailedErrors = true;
+        });
+
         services.AddAuthentication().AddCertificate(opt =>
         {
             opt.AllowedCertificateTypes = CertificateTypes.SelfSigned;
-            opt.RevocationMode = X509RevocationMode.NoCheck; // Self-Signed Certs (Development)
+            opt.RevocationMode = X509RevocationMode.NoCheck;
             opt.Events = new CertificateAuthenticationEvents()
             {
                 OnCertificateValidated = ctx =>
                 {
-                    // Write additional Validation  
                     ctx.Success();
                     return Task.CompletedTask;
                 }
@@ -38,10 +42,6 @@ public class Startup
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<GreeterService>();
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello");
-                });
             });
 
         }
