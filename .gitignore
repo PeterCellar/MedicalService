@@ -14,3 +14,6 @@
 # Ignore compiled binaries and object files
 bin/
 obj/
+
+# Ignore data files
+Data
