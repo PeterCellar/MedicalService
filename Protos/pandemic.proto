@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "MedicalService";
+
+package pandemic;
+
+// The pandemic service definition.
+service Pandemic {
+  
+  // Returns Reproduction number of covid19 for specifich region
+  rpc ReproductionNumberForRegionAsync(ReproductionNumberRequest) returns(ReproductionNumberReply);
+}
+
+message ReproductionNumberRequest{
+    string region = 1;
+    string timePeriod = 2;
+}
+
+message ReproductionNumberReply{
+    string reproductionNumber = 1;
+    string timePeriod = 2;
+    string message = 3;
+}
